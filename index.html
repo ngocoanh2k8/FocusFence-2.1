@@ -161,8 +161,8 @@
                 <!-- Active Session View -->
                 <div id="session-view" class="hidden">
                      <div class="bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg p-6 md:p-8 text-center">
-                        <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Phiên học đang diễn ra</h2>
-                        <p class="text-slate-600 dark:text-slate-400 mb-2">Ở lại trang này để cây của bạn phát triển.</p>
+                        <h2 id="session-header" class="text-2xl font-bold text-slate-900 dark:text-white">Phiên học đang diễn ra</h2>
+                        <p id="session-subheader" class="text-slate-600 dark:text-slate-400 mb-2">Ở lại trang này để cây của bạn phát triển.</p>
 
                         <div class="my-6 flex justify-center">
                            <svg id="tree-svg-session" width="150" height="150" viewBox="0 0 200 200" aria-label="A growing tree representing focus session progress">
@@ -176,7 +176,7 @@
                         </div>
                         
                         <!-- Timer -->
-                        <div class="w-full my-6">
+                        <div id="timer-container" class="w-full my-6">
                             <div id="timer-display" class="text-5xl md:text-7xl font-bold tracking-tighter text-green-500 dark:text-green-400 mb-4 font-mono">
                                 <span>00</span><span class="animate-pulse relative -top-2 md:-top-3 mx-1">:</span><span>00</span><span class="animate-pulse relative -top-2 md:-top-3 mx-1">:</span><span>00</span>
                             </div>
@@ -185,13 +185,16 @@
                             </div>
                         </div>
 
-                        <div class="bg-slate-100/70 dark:bg-slate-800/70 rounded-lg p-4 max-w-md mx-auto">
+                        <div id="commitment-box" class="bg-slate-100/70 dark:bg-slate-800/70 rounded-lg p-4 max-w-md mx-auto">
                             <h3 class="font-semibold text-slate-700 dark:text-slate-300 mb-3">Cam kết của bạn: Giữ tập trung</h3>
                             <p class="text-sm text-slate-600 dark:text-slate-400">Tránh xa phiền nhiễu để giúp cây của bạn phát triển khỏe mạnh.</p>
                         </div>
 
                         <button id="end-early-button" class="mt-8 w-full md:w-auto text-center bg-red-500/80 hover:bg-red-500/100 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-red-300/50 hover:scale-102 active:scale-98">
                             Kết thúc sớm
+                        </button>
+                        <button id="new-tree-button" class="hidden mt-8 w-full md:w-auto text-center bg-green-500/90 hover:bg-green-500/100 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-green-300/50 hover:scale-102 active:scale-98">
+                            Trồng cây mới
                         </button>
                     </div>
                 </div>
@@ -215,9 +218,9 @@
                 <p class="text-xl text-red-700 dark:text-red-300 mb-8">
                     Bạn đã rời đi trước khi phiên học kết thúc. Một trí óc tập trung cần được nuôi dưỡng, cũng giống như một cái cây.
                 </p>
-                <button id="reset-from-exit-button" class="bg-white dark:bg-slate-800 text-red-800 dark:text-red-200 font-bold py-3 px-8 rounded-lg shadow-2xl transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-red-800/20 hover:scale-105 active:scale-95">
-                    Thử trồng lại
-                </button>
+                <p class="text-md text-red-600 dark:text-red-400 mt-8 animate-pulse">
+                    Bạn sẽ được chuyển về trang chính trong giây lát...
+                </p>
             </div>
         </div>
     </div>

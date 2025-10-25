@@ -52,9 +52,14 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtnText: document.getElementById('submit-config-text'),
     };
     const sessionElements = {
+        header: document.getElementById('session-header'),
+        subheader: document.getElementById('session-subheader'),
+        timerContainer: document.getElementById('timer-container'),
+        commitmentBox: document.getElementById('commitment-box'),
         timerDisplay: document.getElementById('timer-display'),
         timerProgressBar: document.getElementById('timer-progress-bar'),
         endEarlyButton: document.getElementById('end-early-button'),
+        newTreeButton: document.getElementById('new-tree-button'),
     };
     const musicPlayer = {
         toggleBtn: document.getElementById('music-toggle-button'),
@@ -65,7 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
         volumeSlider: document.getElementById('volume-slider'),
         audio: document.getElementById('audio-player'),
     };
-    const resetFromExitButton = document.getElementById('reset-from-exit-button');
     const treeElements = {
         config: {
             svg: document.getElementById('tree-svg-config'),
@@ -172,6 +176,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const seconds = String(timeLeft % 60).padStart(2, '0');
         sessionElements.timerDisplay.innerHTML = `<span>${hours}</span><span class="animate-pulse relative -top-2 md:-top-3 mx-1">:</span><span>${minutes}</span><span class="animate-pulse relative -top-2 md:-top-3 mx-1">:</span><span>${seconds}</span>`;
     };
+
+    const resetSessionView = () => {
+        sessionElements.header.textContent = 'Phiên học đang diễn ra';
+        sessionElements.subheader.textContent = 'Ở lại trang này để cây của bạn phát triển.';
+        sessionElements.timerContainer.classList.remove('hidden');
+        sessionElements.commitmentBox.classList.remove('hidden');
+        sessionElements.endEarlyButton.classList.remove('hidden');
+        sessionElements.newTreeButton.classList.add('hidden');
+    };
     
     // --- CORE LOGIC ---
     const startAlarm = () => {
@@ -201,17 +214,20 @@ document.addEventListener('DOMContentLoaded', () => {
         
         updateDashboard();
 
-        setTimeout(() => {
-            sessionConfig = null;
-            views.session.classList.add('hidden');
-            views.configurator.classList.remove('hidden');
-        }, 500);
+        // Update UI to success state
+        sessionElements.header.textContent = 'Tuyệt vời! Bạn đã trồng được một cây mới.';
+        sessionElements.subheader.textContent = 'Hãy tiếp tục duy trì sự tập trung tuyệt vời này.';
+        sessionElements.timerContainer.classList.add('hidden');
+        sessionElements.commitmentBox.classList.add('hidden');
+        sessionElements.endEarlyButton.classList.add('hidden');
+        sessionElements.newTreeButton.classList.remove('hidden');
     };
 
     const startFocusSession = (durationMinutes) => {
         sessionConfig = { duration: durationMinutes * 60 };
         isSessionActive = true;
         
+        resetSessionView();
         views.configurator.classList.add('hidden');
         views.session.classList.remove('hidden');
         
@@ -307,6 +323,11 @@ document.addEventListener('DOMContentLoaded', () => {
         cleanupSession();
         showScreen('earlyExit');
         startAlarm();
+        setTimeout(() => {
+            stopAlarm();
+            showScreen('mainApp');
+            sessionConfig = null;
+        }, 20000); // 20 seconds
     };
     
     // --- MUSIC PLAYER ---
@@ -435,12 +456,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     sessionElements.endEarlyButton.addEventListener('click', handleEarlyEndSession);
-    resetFromExitButton.addEventListener('click', () => {
-        stopAlarm();
-        showScreen('mainApp');
-        setTimeout(() => {
-            sessionConfig = null;
-        }, 500);
+    sessionElements.newTreeButton.addEventListener('click', () => {
+        sessionConfig = null;
+        views.session.classList.add('hidden');
+        views.configurator.classList.remove('hidden');
     });
     
     mainAppElements.claimRewardButton.addEventListener('click', () => {
