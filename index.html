@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FocusFence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./index.css">
+</head>
+<body class="min-h-screen font-sans p-4 md:p-8 flex items-center justify-center">
+
+    <!-- Email Capture Screen -->
+    <div id="email-capture-screen" class="hidden w-full">
+        <div class="max-w-md mx-auto w-full text-center">
+            <header class="mb-8 relative">
+                <button id="theme-toggle-email" class="absolute top-0 right-0 p-2 rounded-full bg-slate-200/50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 hover:bg-slate-300/70 dark:hover:bg-slate-700/70 transition-colors" aria-label="Toggle theme">
+                    <!-- Moon Icon -->
+                    <svg id="theme-icon-moon-email" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    <!-- Sun Icon -->
+                    <svg id="theme-icon-sun-email" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                </button>
+                <h1 class="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-purple-500 to-green-500 leading-tight">
+                    FocusFence
+                </h1>
+            </header>
+            <div class="bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg p-6 md:p-8">
+                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Cùng tìm hiểu về bạn nhé!</h2>
+                <p class="text-slate-600 dark:text-slate-400 mb-6">
+                    Cá nhân hóa góc học tập và nhận lời nhắc để luôn tập trung
+                </p>
+                <form id="email-capture-form" class="space-y-4 text-left">
+                    <div>
+                        <label class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 block">Họ và Tên</label>
+                        <input id="name-input" type="text" placeholder="ví dụ: Nguyễn Văn A" class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-3 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-purple-500 focus:outline-none transition-all" required />
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 block">Địa chỉ Email</label>
+                        <input id="email-input" type="email" placeholder="email.cua.ban@truong.edu" class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-3 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-purple-500 focus:outline-none transition-all" required />
+                    </div>
+
+                    <p id="email-error" class="text-red-500 text-sm text-center hidden"></p>
+                    
+                    <button type="submit" class="w-full text-center bg-gradient-to-r from-blue-500 via-purple-500 to-green-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-purple-300/50 !mt-6 hover:scale-102 active:scale-98">
+                        Bắt đầu học
+                    </button>
+                </form>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-4 text-center">
+                    Chúng tôi tôn trọng quyền riêng tư của bạn. Dữ liệu của bạn được lưu trữ cục bộ và không bao giờ được chia sẻ.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application Screen -->
+    <div id="main-app-screen" class="hidden w-full">
+        <div class="max-w-2xl mx-auto w-full">
+            <header class="text-center mb-6 relative">
+                <button id="theme-toggle-main" class="absolute top-0 right-0 p-2 rounded-full bg-slate-200/50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 hover:bg-slate-300/70 dark:hover:bg-slate-700/70 transition-colors" aria-label="Chuyển đổi giao diện">
+                    <!-- Moon Icon -->
+                    <svg id="theme-icon-moon-main" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    <!-- Sun Icon -->
+                    <svg id="theme-icon-sun-main" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                </button>
+                <h1 class="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-purple-500 to-green-500">
+                    Chào mừng, <span id="student-name"></span>!
+                </h1>
+                <p class="mt-2 text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+                    Bảng điều khiển cá nhân của bạn để chặn phiền nhiễu và chinh phục bài vở.
+                </p>
+            </header>
+
+            <main class="space-y-6">
+                <!-- Dashboard View (Progress + Daily Reward) -->
+                <div class="px-2 space-y-4">
+                    <!-- Progress Bar -->
+                    <div id="progress-bar-container" class="bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-xl shadow-md p-4 w-full">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-sm font-semibold text-slate-800 dark:text-slate-200">Tiến độ cột mốc</h3>
+                            <span id="total-trees-planted" class="text-sm font-bold text-green-600 dark:text-green-400">0 Cây đã trồng</span>
+                        </div>
+                        <div class="relative h-3 bg-slate-200/80 dark:bg-slate-700/80 rounded-full overflow-hidden border border-slate-300/50 dark:border-slate-600/50">
+                            <div id="progress-bar-fill" class="absolute top-0 left-0 h-full bg-gradient-to-r from-lime-400 to-green-500 rounded-full" style="width: 0%;"></div>
+                        </div>
+                        <div class="text-xs text-slate-500 dark:text-slate-400 mt-1.5 text-right">
+                            Cột mốc tiếp theo: <span id="next-milestone" class="font-semibold">1 cây</span>
+                        </div>
+                    </div>
+                    <!-- Daily Reward -->
+                    <div id="daily-reward-container" class="bg-amber-100/40 dark:bg-amber-900/20 backdrop-blur-sm border border-amber-300/50 dark:border-amber-800/50 rounded-xl shadow-md p-4 w-full flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div id="daily-reward-icon" class="text-3xl">🎁</div>
+                            <div>
+                                <h3 class="font-semibold text-amber-900 dark:text-amber-200">Phần thưởng hàng ngày</h3>
+                                <p id="daily-reward-text" class="text-xs text-amber-700 dark:text-amber-300">Trồng 1 cây hôm nay để mở khóa!</p>
+                            </div>
+                        </div>
+                        <button id="claim-reward-button" class="hidden bg-amber-400 hover:bg-amber-500 text-amber-900 font-bold text-sm py-2 px-4 rounded-lg shadow-md transition-colors hover:scale-105 active:scale-95">
+                            Nhận thưởng
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Configurator View -->
+                <div id="configurator-view">
+                    <div class="bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg overflow-hidden">
+                        <div class="p-6 text-center">
+                            <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Thiết lập phiên học của bạn</h2>
+                            <p class="mt-1 text-slate-600 dark:text-slate-400">Đặt thời gian tập trung và một cái cây sẽ lớn lên khi bạn làm việc.</p>
+                            <div class="my-6 flex justify-center">
+                                <svg id="tree-svg-config" width="150" height="150" viewBox="0 0 200 200" aria-label="A growing tree representing focus session progress">
+                                    <path d="M 10 190 Q 100 170 190 190" stroke="#7c2d12" stroke-width="4" fill="transparent"></path>
+                                    <rect id="tree-trunk-config" x="95" width="10" fill="#7c2d12" y="190" height="0" style="transition: all 1s ease-out;"></rect>
+                                    <g id="tree-foliage-config" style="transform-origin: center 90px; transition: all 1s ease-out 0.5s; transform: scale(0); opacity: 0;">
+                                        <circle cx="100" cy="50" r="45" fill="#84cc16"></circle><circle cx="70" cy="80" r="35" fill="#84cc16"></circle>
+                                        <circle cx="130" cy="80" r="35" fill="#84cc16"></circle><circle cx="100" cy="95" r="30" fill="#84cc16"></circle>
+                                    </g>
+                                </svg>
+                            </div>
+                        </div>
+                        <form id="config-form">
+                            <div class="bg-slate-50/70 dark:bg-black/20 p-6 border-t border-slate-200 dark:border-slate-700 space-y-8">
+                                <div class="flex bg-slate-200 dark:bg-slate-800 rounded-lg p-1 max-w-sm mx-auto">
+                                    <button id="manual-mode-btn" type="button" class="w-1/2 rounded-md py-2 text-sm font-medium transition-colors bg-white dark:bg-slate-700 text-purple-700 dark:text-purple-400 shadow">Phiên thủ công</button>
+                                    <button id="scheduled-mode-btn" type="button" class="w-1/2 rounded-md py-2 text-sm font-medium transition-colors text-slate-600 dark:text-slate-300 hover:bg-white/50 dark:hover:bg-slate-700/50">Lịch tập trung</button>
+                                </div>
+                                <div id="manual-config-panel">
+                                    <label for="duration-input" class="block text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4 text-center">Đặt thời gian phiên học</label>
+                                    <div class="flex items-baseline justify-center gap-2 max-w-sm mx-auto">
+                                        <input id="duration-input" type="number" min="1" placeholder="25" value="25" class="w-48 text-center text-5xl font-bold font-mono bg-transparent border-b-2 border-slate-300 dark:border-slate-600 focus:border-purple-500 dark:focus:border-purple-400 focus:outline-none transition-colors py-2 text-green-600 dark:text-green-400">
+                                        <span class="text-slate-500 dark:text-slate-400 font-medium text-lg self-end pb-2">phút</span>
+                                    </div>
+                                </div>
+                                <div id="scheduled-config-panel" class="hidden space-y-6">
+                                   <h3 class="block text-lg font-semibold text-slate-800 dark:text-slate-200 text-center">Thiết lập lịch trình của bạn</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="start-time" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Thời gian bắt đầu</label>
+                                            <input type="time" id="start-time" value="09:00" class="w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-md px-3 py-2 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-purple-500">
+                                        </div>
+                                        <div>
+                                            <label for="end-time" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Thời gian kết thúc</label>
+                                            <input type="time" id="end-time" value="17:00" class="w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-md px-3 py-2 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-purple-500">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Các ngày lặp lại</label>
+                                        <div id="days-of-week-container" class="flex flex-wrap gap-2"></div>
+                                    </div>
+                                    <p class="text-xs text-slate-500 text-center">Các phiên đã lên lịch sẽ tự động bắt đầu nếu ứng dụng được mở trong thời gian đã đặt.</p>
+                                </div>
+                            </div>
+                            <div class="p-6 bg-white/50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-700">
+                                <button type="submit" class="w-full text-center bg-gradient-to-r from-blue-500 via-purple-500 to-green-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-purple-300/50 hover:scale-102 active:scale-98">
+                                    <span id="submit-config-text">Bắt đầu trồng cây</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Active Session View -->
+                <div id="session-view" class="hidden">
+                     <div class="bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg p-6 md:p-8 text-center">
+                        <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Phiên học đang diễn ra</h2>
+                        <p class="text-slate-600 dark:text-slate-400 mb-2">Ở lại trang này để cây của bạn phát triển.</p>
+
+                        <div class="my-6 flex justify-center">
+                           <svg id="tree-svg-session" width="150" height="150" viewBox="0 0 200 200" aria-label="A growing tree representing focus session progress">
+                                <path id="tree-ground-session" d="M 10 190 Q 100 170 190 190" stroke="#7c2d12" stroke-width="4" fill="transparent"></path>
+                                <rect id="tree-trunk-session" x="95" width="10" fill="#7c2d12" y="190" height="0" style="transition: all 1s ease-out;"></rect>
+                                <g id="tree-foliage-session" style="transform-origin: center 90px; transition: all 1s ease-out 0.5s; transform: scale(0); opacity: 0;">
+                                    <circle cx="100" cy="50" r="45" fill="#84cc16"></circle><circle cx="70" cy="80" r="35" fill="#84cc16"></circle>
+                                    <circle cx="130" cy="80" r="35" fill="#84cc16"></circle><circle cx="100" cy="95" r="30" fill="#84cc16"></circle>
+                                </g>
+                            </svg>
+                        </div>
+                        
+                        <!-- Timer -->
+                        <div class="w-full my-6">
+                            <div id="timer-display" class="text-5xl md:text-7xl font-bold tracking-tighter text-green-500 dark:text-green-400 mb-4 font-mono">
+                                <span>00</span><span class="animate-pulse relative -top-2 md:-top-3 mx-1">:</span><span>00</span><span class="animate-pulse relative -top-2 md:-top-3 mx-1">:</span><span>00</span>
+                            </div>
+                            <div class="h-4 w-full bg-slate-200/80 dark:bg-slate-700/80 rounded-full overflow-hidden border border-slate-300 dark:border-slate-600">
+                                <div id="timer-progress-bar" class="h-full bg-gradient-to-r from-blue-400 via-purple-500 to-green-400 rounded-full" style="width: 100%; transition: width 1s linear;"></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-100/70 dark:bg-slate-800/70 rounded-lg p-4 max-w-md mx-auto">
+                            <h3 class="font-semibold text-slate-700 dark:text-slate-300 mb-3">Cam kết của bạn: Giữ tập trung</h3>
+                            <p class="text-sm text-slate-600 dark:text-slate-400">Tránh xa phiền nhiễu để giúp cây của bạn phát triển khỏe mạnh.</p>
+                        </div>
+
+                        <button id="end-early-button" class="mt-8 w-full md:w-auto text-center bg-red-500/80 hover:bg-red-500/100 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-red-300/50 hover:scale-102 active:scale-98">
+                            Kết thúc sớm
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Early Exit Screen -->
+    <div id="early-exit-screen" class="hidden">
+        <div class="fixed inset-0 bg-red-100/90 dark:bg-red-900/60 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-4 text-center">
+            <div class="max-w-md">
+                <svg id="tree-svg-withered" width="150" height="150" viewBox="0 0 200 200" aria-label="A withered tree representing an incomplete focus session" class="mx-auto opacity-60">
+                    <path id="tree-ground-withered" d="M 10 190 Q 100 170 190 190" stroke="#78716c" stroke-width="4" fill="transparent"></path>
+                    <rect id="tree-trunk-withered" x="95" width="10" fill="#78716c" y="190" height="0"></rect>
+                    <g id="tree-foliage-withered" style="transform-origin: center 90px;">
+                        <circle cx="100" cy="50" r="45" fill="#9ca3af"></circle><circle cx="70" cy="80" r="35" fill="#9ca3af"></circle>
+                        <circle cx="130" cy="80" r="35" fill="#9ca3af"></circle><circle cx="100" cy="95" r="30" fill="#9ca3af"></circle>
+                    </g>
+                </svg>
+                <h2 class="text-4xl font-bold text-red-900 dark:text-red-200 mb-4 mt-4">Cây của bạn đã héo</h2>
+                <p class="text-xl text-red-700 dark:text-red-300 mb-8">
+                    Bạn đã rời đi trước khi phiên học kết thúc. Một trí óc tập trung cần được nuôi dưỡng, cũng giống như một cái cây.
+                </p>
+                <button id="reset-from-exit-button" class="bg-white dark:bg-slate-800 text-red-800 dark:text-red-200 font-bold py-3 px-8 rounded-lg shadow-2xl transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-red-800/20 hover:scale-105 active:scale-95">
+                    Thử trồng lại
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Music Player -->
+    <div class="fixed bottom-4 left-4 z-50">
+        <div id="music-panel" class="hidden absolute bottom-16 left-0 w-64 bg-white/60 dark:bg-slate-900/60 backdrop-blur-md border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg p-4 space-y-3">
+            <div class="flex items-center justify-between">
+                <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">Nhạc tập trung</p>
+                <button id="play-pause-button" class="p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-slate-700/70 transition-colors" aria-label="Phát">
+                    <!-- Play Icon -->
+                    <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <!-- Pause Icon -->
+                    <svg id="pause-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </button>
+            </div>
+            <div class="flex items-center gap-2">
+                <!-- Volume Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                <input id="volume-slider" type="range" min="0" max="1" step="0.01" value="0.5" class="w-full h-1.5 bg-transparent appearance-none cursor-pointer rounded-full">
+            </div>
+        </div>
+        <button id="music-toggle-button" class="w-12 h-12 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-slate-200 dark:border-slate-600 rounded-full flex items-center justify-center shadow-lg text-slate-700 dark:text-slate-200 hover:scale-110 active:scale-90 transition-transform" aria-label="Mở trình phát nhạc">
+            <!-- Music Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z"></path></svg>
+        </button>
+    </div>
+
+    <audio id="audio-player" src="https://cdn.pixabay.com/audio/2022/11/22/audio_296b016833.mp3" loop></audio>
+
+    <script type="module" src="./index.js"></script>
+</body>
+</html>
