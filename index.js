@@ -8,6 +8,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const MILESTONES = [1, 5, 10, 25, 50, 100];
     const DAYS_OF_WEEK = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+    const MOTIVATIONAL_MESSAGES = [
+        "Một ngày mới, một cơ hội mới để tập trung và thành công. Bắt đầu phiên học của bạn nào!",
+        "Hành trình vạn dặm bắt đầu bằng một bước chân. Bước chân hôm nay của bạn là gì? Cùng tập trung nhé!",
+        "Đừng chờ đợi cảm hứng, hãy tạo ra nó. Bắt đầu tập trung và xem điều kỳ diệu xảy ra.",
+        "Sự khác biệt giữa bình thường và phi thường chính là sự 'thêm một chút'. Hãy 'thêm một chút' tập trung ngay hôm nay!",
+        "Hôm nay là một trang giấy trắng. Hãy viết nên một câu chuyện thành công bằng sự tập trung của bạn.",
+        "Tương lai của bạn được tạo ra bởi những gì bạn làm hôm nay, không phải ngày mai. Bắt đầu phiên học của bạn!"
+    ];
 
     // --- DOM ELEMENT SELECTORS ---
     const body = document.body;
@@ -15,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
         emailCapture: document.getElementById('email-capture-screen'),
         mainApp: document.getElementById('main-app-screen'),
         earlyExit: document.getElementById('early-exit-screen'),
+        weeklyReview: document.getElementById('weekly-review-screen'),
     };
     const views = {
         configurator: document.getElementById('configurator-view'),
@@ -28,16 +37,18 @@ document.addEventListener('DOMContentLoaded', () => {
         form: document.getElementById('email-capture-form'),
         nameInput: document.getElementById('name-input'),
         emailInput: document.getElementById('email-input'),
+        remindersCheckbox: document.getElementById('reminders-checkbox'),
         error: document.getElementById('email-error'),
     };
     const mainAppElements = {
         studentName: document.getElementById('student-name'),
-        totalTreesPlanted: document.getElementById('total-trees-planted'),
+        totalCrystalsGrown: document.getElementById('total-crystals-grown'),
         progressBarFill: document.getElementById('progress-bar-fill'),
         nextMilestone: document.getElementById('next-milestone'),
         dailyRewardIcon: document.getElementById('daily-reward-icon'),
         dailyRewardText: document.getElementById('daily-reward-text'),
         claimRewardButton: document.getElementById('claim-reward-button'),
+        showReviewBtn: document.getElementById('show-review-btn'),
     };
     const configurator = {
         form: document.getElementById('config-form'),
@@ -46,6 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
         manualPanel: document.getElementById('manual-config-panel'),
         scheduledPanel: document.getElementById('scheduled-config-panel'),
         durationInput: document.getElementById('duration-input'),
+        letterInput: document.getElementById('letter-input'),
         startTimeInput: document.getElementById('start-time'),
         endTimeInput: document.getElementById('end-time'),
         daysContainer: document.getElementById('days-of-week-container'),
@@ -55,50 +67,57 @@ document.addEventListener('DOMContentLoaded', () => {
         header: document.getElementById('session-header'),
         subheader: document.getElementById('session-subheader'),
         timerContainer: document.getElementById('timer-container'),
-        commitmentBox: document.getElementById('commitment-box'),
+        successMessageContainer: document.getElementById('success-message-container'),
         timerDisplay: document.getElementById('timer-display'),
         timerProgressBar: document.getElementById('timer-progress-bar'),
         endEarlyButton: document.getElementById('end-early-button'),
-        newTreeButton: document.getElementById('new-tree-button'),
+        newCrystalButton: document.getElementById('new-crystal-button'),
     };
-    const musicPlayer = {
-        toggleBtn: document.getElementById('music-toggle-button'),
-        panel: document.getElementById('music-panel'),
-        playPauseBtn: document.getElementById('play-pause-button'),
-        playIcon: document.getElementById('play-icon'),
-        pauseIcon: document.getElementById('pause-icon'),
-        volumeSlider: document.getElementById('volume-slider'),
-        audio: document.getElementById('audio-player'),
+    const weeklyReviewElements = {
+        closeBtn: document.getElementById('close-review-btn'),
+        totalCrystals: document.getElementById('review-total-crystals'),
+        totalTime: document.getElementById('review-total-time'),
+        lettersContainer: document.getElementById('letters-container'),
     };
-    const treeElements = {
+    const growthVisualElements = {
         config: {
-            svg: document.getElementById('tree-svg-config'),
-            trunk: document.getElementById('tree-trunk-config'),
-            foliage: document.getElementById('tree-foliage-config')
+            base: document.getElementById('crystal-base-config'),
+            mainShard: document.getElementById('crystal-main-shard-config'),
+            leftShard: document.getElementById('crystal-left-shard-config'),
+            rightShard: document.getElementById('crystal-right-shard-config'),
+            glow: document.getElementById('crystal-glow-config'),
         },
         session: {
-            svg: document.getElementById('tree-svg-session'),
-            trunk: document.getElementById('tree-trunk-session'),
-            foliage: document.getElementById('tree-foliage-session')
+            base: document.getElementById('crystal-base-session'),
+            mainShard: document.getElementById('crystal-main-shard-session'),
+            leftShard: document.getElementById('crystal-left-shard-session'),
+            rightShard: document.getElementById('crystal-right-shard-session'),
+            glow: document.getElementById('crystal-glow-session'),
         },
         withered: {
-            svg: document.getElementById('tree-svg-withered'),
-            trunk: document.getElementById('tree-trunk-withered'),
-            foliage: document.getElementById('tree-foliage-withered')
+            base: document.getElementById('crystal-base-withered'),
+            mainShard: document.getElementById('crystal-main-shard-withered'),
+            leftShard: document.getElementById('crystal-left-shard-withered'),
+            rightShard: document.getElementById('crystal-right-shard-withered'),
+            glow: document.getElementById('crystal-glow-withered'),
         },
     };
 
     // --- HELPER FUNCTIONS ---
     const showScreen = (screenName) => {
         Object.values(screens).forEach(screen => screen.classList.add('hidden'));
+        if(screens.mainApp === screens[screenName] || screens.emailCapture === screens[screenName]) {
+            Object.values(screens).forEach(screen => screen.classList.add('hidden'));
+        }
+
         if (screens[screenName]) {
             screens[screenName].classList.remove('hidden');
         }
     };
 
-    const getVietnamDateString = () => {
+    const getVietnamDateString = (date = new Date()) => {
         const vietnamTimeOpts = { timeZone: 'Asia/Ho_Chi_Minh', year: 'numeric', month: 'numeric', day: 'numeric' };
-        return new Intl.DateTimeFormat('en-CA', vietnamTimeOpts).format(new Date());
+        return new Intl.DateTimeFormat('en-CA', vietnamTimeOpts).format(date);
     };
 
     const saveStudentData = () => {
@@ -119,7 +138,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         document.querySelectorAll('#theme-icon-moon-email, #theme-icon-moon-main').forEach(el => theme === 'dark' ? el.classList.add('hidden') : el.classList.remove('hidden'));
         document.querySelectorAll('#theme-icon-sun-email, #theme-icon-sun-main').forEach(el => theme === 'dark' ? el.classList.remove('hidden') : el.classList.add('hidden'));
-        updateVolumeSliderBackground(musicPlayer.volumeSlider.value);
     };
 
     const updateDashboard = () => {
@@ -127,19 +145,19 @@ document.addEventListener('DOMContentLoaded', () => {
         mainAppElements.studentName.textContent = studentData.name;
         
         // Progress Bar
-        const { totalTreesPlanted } = studentData;
-        mainAppElements.totalTreesPlanted.textContent = `${totalTreesPlanted} Cây đã trồng`;
-        const currentMilestoneIndex = MILESTONES.findIndex(m => totalTreesPlanted < m);
+        const { totalCrystalsGrown } = studentData;
+        mainAppElements.totalCrystalsGrown.textContent = `${totalCrystalsGrown} Tinh thể đã nuôi`;
+        const currentMilestoneIndex = MILESTONES.findIndex(m => totalCrystalsGrown < m);
         const prevMilestone = currentMilestoneIndex > 0 ? MILESTONES[currentMilestoneIndex - 1] : 0;
         const nextMilestone = currentMilestoneIndex !== -1 ? MILESTONES[currentMilestoneIndex] : MILESTONES[MILESTONES.length - 1];
         let progressPercentage = 0;
-        if (totalTreesPlanted >= nextMilestone && nextMilestone === MILESTONES[MILESTONES.length - 1]) {
+        if (totalCrystalsGrown >= nextMilestone && nextMilestone === MILESTONES[MILESTONES.length - 1]) {
             progressPercentage = 100;
         } else if (nextMilestone > prevMilestone) {
-            progressPercentage = ((totalTreesPlanted - prevMilestone) / (nextMilestone - prevMilestone)) * 100;
+            progressPercentage = ((totalCrystalsGrown - prevMilestone) / (nextMilestone - prevMilestone)) * 100;
         }
         mainAppElements.progressBarFill.style.width = `${progressPercentage}%`;
-        mainAppElements.nextMilestone.textContent = `${nextMilestone} cây`;
+        mainAppElements.nextMilestone.textContent = `${nextMilestone} tinh thể`;
 
         // Daily Reward
         const { dailyReward } = studentData;
@@ -148,26 +166,38 @@ document.addEventListener('DOMContentLoaded', () => {
         mainAppElements.dailyRewardIcon.textContent = goalMet && !dailyReward.claimed ? '🏆' : '🎁';
         mainAppElements.dailyRewardText.textContent = goalMet 
             ? (dailyReward.claimed ? "Bạn đã nhận phần thưởng hôm nay!" : "Bạn đã nhận được phần thưởng!") 
-            : `Trồng 1 cây hôm nay để mở khóa!`;
+            : `Nuôi 1 tinh thể hôm nay để mở khóa!`;
     };
+    
+    const updateGrowthVisual = (progress, visualKey, withered = false) => {
+        const elements = growthVisualElements[visualKey];
+        if (!elements || !elements.mainShard) return;
 
-    const updateTree = (progress, treeKey, withered = false) => {
-        const elements = treeElements[treeKey];
-        if (!elements) return;
+        const mainShardScale = Math.min(1, progress * 2);
+        const sideShardsScale = Math.max(0, Math.min(1, (progress - 0.4) * 2.5));
+        const baseOpacity = progress > 0.1 ? 1 : 0;
+        const glowOpacity = progress >= 1 ? 0.7 : 0;
 
-        const trunkHeight = 10 + 90 * progress;
-        const foliageScale = progress;
+        elements.base.style.opacity = baseOpacity;
+        elements.mainShard.style.transform = `scaleY(${mainShardScale})`;
+        elements.leftShard.style.transform = `scale(${sideShardsScale})`;
+        elements.rightShard.style.transform = `scale(${sideShardsScale})`;
+        elements.glow.style.opacity = glowOpacity;
 
-        elements.trunk.style.y = 190 - trunkHeight;
-        elements.trunk.style.height = trunkHeight;
-        elements.foliage.style.transform = `scale(${foliageScale})`;
-        elements.foliage.style.opacity = foliageScale > 0.1 ? 1 : 0;
+        const mainFill = withered ? `url(#grad-withered-${visualKey})` : `url(#grad-main-${visualKey})`;
+        const sideFill = withered ? `url(#grad-withered-${visualKey})` : `url(#grad-side-${visualKey})`;
+        
+        elements.mainShard.querySelector('polygon').setAttribute('fill', mainFill);
+        elements.leftShard.querySelector('polygon').setAttribute('fill', sideFill);
+        elements.rightShard.querySelector('polygon').setAttribute('fill', sideFill);
 
-        const color = withered ? '#9ca3af' : '#84cc16';
-        const trunkColor = withered ? '#78716c' : '#7c2d12';
-        elements.foliage.querySelectorAll('circle').forEach(c => c.setAttribute('fill', color));
-        elements.trunk.setAttribute('fill', trunkColor);
-        elements.svg.querySelector('path').setAttribute('stroke', trunkColor);
+        if (withered) {
+            elements.base.style.opacity = 1;
+            elements.base.querySelector('path').setAttribute('stroke', '#6b7280');
+            elements.glow.style.opacity = 0;
+        } else {
+             elements.base.querySelector('path').setAttribute('stroke', '#a78bfa');
+        }
     };
 
     const updateTimerDisplay = (timeLeft) => {
@@ -178,12 +208,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const resetSessionView = () => {
-        sessionElements.header.textContent = 'Phiên học đang diễn ra';
-        sessionElements.subheader.textContent = 'Ở lại trang này để cây của bạn phát triển.';
+        sessionElements.subheader.textContent = 'Hãy ở lại đây. Tinh thể của bạn đang phát triển bên trong.';
         sessionElements.timerContainer.classList.remove('hidden');
-        sessionElements.commitmentBox.classList.remove('hidden');
+        sessionElements.successMessageContainer.classList.add('hidden');
         sessionElements.endEarlyButton.classList.remove('hidden');
-        sessionElements.newTreeButton.classList.add('hidden');
+        sessionElements.newCrystalButton.classList.add('hidden');
+        configurator.letterInput.value = '';
     };
     
     // --- CORE LOGIC ---
@@ -208,19 +238,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const handleSessionComplete = () => {
         cleanupSession();
         
-        studentData.totalTreesPlanted += 1;
+        studentData.totalCrystalsGrown += 1;
+        studentData.totalFocusTime += sessionConfig.duration;
         studentData.dailyReward.sessionsToday += 1;
         saveStudentData();
         
         updateDashboard();
 
         // Update UI to success state
-        sessionElements.header.textContent = 'Tuyệt vời! Bạn đã trồng được một cây mới.';
-        sessionElements.subheader.textContent = 'Hãy tiếp tục duy trì sự tập trung tuyệt vời này.';
+        sessionElements.header.textContent = 'Hộp Thời Gian đã mở khóa!';
+        sessionElements.subheader.textContent = 'Bạn đã hoàn thành cam kết của mình. Làm tốt lắm!';
         sessionElements.timerContainer.classList.add('hidden');
-        sessionElements.commitmentBox.classList.add('hidden');
+        sessionElements.successMessageContainer.classList.remove('hidden');
         sessionElements.endEarlyButton.classList.add('hidden');
-        sessionElements.newTreeButton.classList.remove('hidden');
+        sessionElements.newCrystalButton.classList.remove('hidden');
     };
 
     const startFocusSession = (durationMinutes) => {
@@ -231,13 +262,23 @@ document.addEventListener('DOMContentLoaded', () => {
         views.configurator.classList.add('hidden');
         views.session.classList.remove('hidden');
         
+        const letterContent = configurator.letterInput.value.trim();
+        if (letterContent) {
+            studentData.letters.push({
+                date: new Date().toISOString(),
+                content: letterContent,
+                duration: durationMinutes,
+            });
+            saveStudentData();
+        }
+
         document.documentElement.requestFullscreen().catch(err => {
             console.error(`Could not enter fullscreen: ${err.message}`);
         });
 
         let timeLeft = sessionConfig.duration;
         updateTimerDisplay(timeLeft);
-        updateTree(0, 'session');
+        updateGrowthVisual(0, 'session');
         sessionElements.timerProgressBar.style.width = '100%';
 
         timerInterval = setInterval(() => {
@@ -246,13 +287,71 @@ document.addEventListener('DOMContentLoaded', () => {
             const progressPercentage = (timeLeft / sessionConfig.duration) * 100;
 
             updateTimerDisplay(timeLeft);
-            updateTree(progress, 'session');
+            updateGrowthVisual(progress, 'session');
             sessionElements.timerProgressBar.style.width = `${progressPercentage}%`;
 
             if (timeLeft <= 0) {
                 handleSessionComplete();
             }
         }, 1000);
+    };
+
+    const showDailyReminder = () => {
+        if (!studentData || !studentData.wantsReminders || !('Notification' in window) || Notification.permission !== 'granted') {
+            return;
+        }
+
+        const todayStr = getVietnamDateString();
+        if (studentData.lastNotificationDate === todayStr) {
+            return; // Already shown today
+        }
+        
+        const now = new Date();
+        const vietnamHour = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Ho_Chi_Minh', hour: 'numeric', hour12: false }).format(now);
+        const hour = parseInt(vietnamHour, 10);
+
+        if (hour >= 8 && hour < 18) {
+            const randomIndex = Math.floor(Math.random() * MOTIVATIONAL_MESSAGES.length);
+            const title = `Chào buổi sáng, ${studentData.name}!`;
+            const body = MOTIVATIONAL_MESSAGES[randomIndex];
+            
+            new Notification(title, { body });
+
+            studentData.lastNotificationDate = todayStr;
+            saveStudentData();
+        }
+    };
+
+    const renderWeeklyReview = () => {
+        weeklyReviewElements.totalCrystals.textContent = studentData.totalCrystalsGrown;
+        const totalMinutes = Math.round(studentData.totalFocusTime / 60);
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+        weeklyReviewElements.totalTime.textContent = `${hours} giờ ${minutes} phút`;
+
+        weeklyReviewElements.lettersContainer.innerHTML = '';
+        if (studentData.letters.length === 0) {
+             weeklyReviewElements.lettersContainer.innerHTML = `<p class="text-slate-500 dark:text-slate-400 text-center py-8">Bạn chưa viết lá thư nào. Hãy bắt đầu một phiên học để gửi gắm cam kết đầu tiên!</p>`;
+             return;
+        }
+
+        [...studentData.letters].reverse().forEach(letter => {
+            const letterEl = document.createElement('div');
+            letterEl.className = 'bg-slate-100 dark:bg-slate-900/50 p-4 rounded-lg border border-slate-200 dark:border-slate-700';
+            
+            const date = new Date(letter.date);
+            const formattedDate = new Intl.DateTimeFormat('vi-VN', {
+                dateStyle: 'full',
+                timeStyle: 'short',
+                timeZone: 'Asia/Ho_Chi_Minh'
+            }).format(date);
+
+            letterEl.innerHTML = `
+                <p class="text-xs text-slate-500 dark:text-slate-400 mb-2 font-semibold">${formattedDate} - ${letter.duration} phút</p>
+                <p class="text-slate-700 dark:text-slate-300 whitespace-pre-wrap">${letter.content}</p>
+            `;
+            weeklyReviewElements.lettersContainer.appendChild(letterEl);
+        });
     };
 
     // --- EVENT HANDLERS ---
@@ -268,6 +367,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const name = emailCaptureForm.nameInput.value.trim();
         const email = emailCaptureForm.emailInput.value.trim();
+        const wantsReminders = emailCaptureForm.remindersCheckbox.checked;
         
         if (!name) {
             emailCaptureForm.error.textContent = 'Vui lòng nhập tên của bạn.';
@@ -284,11 +384,24 @@ document.addEventListener('DOMContentLoaded', () => {
         
         studentData = {
             name, email,
+            wantsReminders,
+            lastNotificationDate: null,
             lastSeen: new Date().getTime(),
-            totalTreesPlanted: 0,
+            totalCrystalsGrown: 0,
+            totalFocusTime: 0, // seconds
+            letters: [],
             dailyReward: { date: getVietnamDateString(), sessionsToday: 0, claimed: false }
         };
         saveStudentData();
+
+        if (wantsReminders && 'Notification' in window) {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    console.log('Notification permission granted.');
+                }
+            });
+        }
+        
         initializeApp();
     };
 
@@ -319,45 +432,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const handleEarlyEndSession = () => {
         const progress = (sessionConfig.duration - (sessionConfig.duration - (timerInterval ? 1 : 0))) / sessionConfig.duration; // A mock progress
-        updateTree(progress, 'withered', true);
+        updateGrowthVisual(progress, 'withered', true);
         cleanupSession();
         showScreen('earlyExit');
         startAlarm();
         setTimeout(() => {
             stopAlarm();
             showScreen('mainApp');
+            views.configurator.classList.remove('hidden');
+            views.session.classList.add('hidden');
             sessionConfig = null;
-        }, 20000); // 20 seconds
+        }, 5000); // 5 seconds
     };
-    
-    // --- MUSIC PLAYER ---
-    const updateVolumeSliderBackground = (volume) => {
-        const isDark = document.documentElement.classList.contains('dark');
-        const sliderTrackColor = isDark ? '#334155' : '#e2e8f0';
-        musicPlayer.volumeSlider.style.background = `linear-gradient(to right, #8b5cf6 ${volume * 100}%, ${sliderTrackColor} ${volume * 100}%)`;
-    };
-
-    musicPlayer.toggleBtn.addEventListener('click', () => {
-        musicPlayer.panel.classList.toggle('hidden');
-    });
-
-    musicPlayer.playPauseBtn.addEventListener('click', () => {
-        const isPlaying = !musicPlayer.audio.paused;
-        if (isPlaying) {
-            musicPlayer.audio.pause();
-        } else {
-            musicPlayer.audio.play().catch(e => console.error("Audio play failed:", e));
-        }
-        musicPlayer.playIcon.classList.toggle('hidden', !isPlaying);
-        musicPlayer.pauseIcon.classList.toggle('hidden', isPlaying);
-    });
-
-    musicPlayer.volumeSlider.addEventListener('input', (e) => {
-        const volume = parseFloat(e.target.value);
-        musicPlayer.audio.volume = volume;
-        updateVolumeSliderBackground(volume);
-    });
-
 
     // --- SCHEDULED MODE ---
     const startScheduleChecker = () => {
@@ -391,12 +477,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const storedData = localStorage.getItem('studentData');
         if (storedData) {
             studentData = JSON.parse(storedData);
+            // --- Data Migration for returning users ---
+            if (studentData.totalTreesPlanted !== undefined) {
+                studentData.totalCrystalsGrown = studentData.totalTreesPlanted;
+                delete studentData.totalTreesPlanted;
+            }
+            if (studentData.totalFocusTime === undefined) studentData.totalFocusTime = 0;
+            if (studentData.letters === undefined) studentData.letters = [];
+            saveStudentData();
+            // --- End Migration ---
         } else {
             showScreen('emailCapture');
             return;
         }
 
         showScreen('mainApp');
+        showDailyReminder();
 
         // Daily Reward Logic
         const todayStr = getVietnamDateString();
@@ -441,7 +537,7 @@ document.addEventListener('DOMContentLoaded', () => {
         configurator.scheduledModeBtn.className = 'w-1/2 rounded-md py-2 text-sm font-medium transition-colors text-slate-600 dark:text-slate-300 hover:bg-white/50 dark:hover:bg-slate-700/50';
         configurator.manualPanel.classList.remove('hidden');
         configurator.scheduledPanel.classList.add('hidden');
-        configurator.submitBtnText.textContent = 'Bắt đầu trồng cây';
+        configurator.submitBtnText.textContent = 'Khóa Hộp & Bắt đầu';
     });
     configurator.scheduledModeBtn.addEventListener('click', () => {
         configurator.manualModeBtn.className = 'w-1/2 rounded-md py-2 text-sm font-medium transition-colors text-slate-600 dark:text-slate-300 hover:bg-white/50 dark:hover:bg-slate-700/50';
@@ -452,11 +548,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     configurator.durationInput.addEventListener('input', () => {
         const duration = parseInt(configurator.durationInput.value, 10) || 0;
-        updateTree(Math.min(1, duration / 120), 'config');
+        updateGrowthVisual(Math.min(1, duration / 120), 'config');
     });
 
     sessionElements.endEarlyButton.addEventListener('click', handleEarlyEndSession);
-    sessionElements.newTreeButton.addEventListener('click', () => {
+    sessionElements.newCrystalButton.addEventListener('click', () => {
         sessionConfig = null;
         views.session.classList.add('hidden');
         views.configurator.classList.remove('hidden');
@@ -470,6 +566,14 @@ document.addEventListener('DOMContentLoaded', () => {
         alert("Đã nhận phần thưởng! Hãy tiếp tục phát huy!");
     });
     
+    mainAppElements.showReviewBtn.addEventListener('click', () => {
+        renderWeeklyReview();
+        showScreen('weeklyReview');
+    });
+    weeklyReviewElements.closeBtn.addEventListener('click', () => {
+        showScreen('mainApp');
+    });
+
     // Day toggles for schedule
     DAYS_OF_WEEK.forEach(day => {
         const defaultChecked = ['T2', 'T3', 'T4', 'T5', 'T6'].includes(day);
@@ -499,6 +603,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Final Initialization Call ---
     applyTheme(localStorage.getItem('theme') || 'light');
-    updateTree(25 / 120, 'config'); // Initial tree preview
+    updateGrowthVisual(25 / 120, 'config'); // Initial crystal preview
     initializeApp();
 });
