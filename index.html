@@ -123,7 +123,7 @@
                             <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Kiến tạo tinh thể tập trung</h2>
                             <p class="mt-1 text-slate-600 dark:text-slate-400">Đặt thời gian và gửi gắm cam kết của bạn vào Hộp Thời Gian.</p>
                             <div class="my-6 flex justify-center">
-                                <svg id="crystal-svg-config" width="250" height="250" viewBox="0 0 200 200" aria-label="Một tinh thể đang lớn dần, đại diện cho tiến trình của phiên tập trung">
+                                <svg id="crystal-svg-config" width="300" height="300" viewBox="0 0 200 200" aria-label="Một tinh thể đang lớn dần, đại diện cho tiến trình của phiên tập trung">
                                     <defs>
                                         <linearGradient id="grad-main-config" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#a855f7;stop-opacity:1" /><stop offset="100%" style="stop-color:#6366f1;stop-opacity:1" /></linearGradient>
                                         <linearGradient id="grad-side-config" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:1" /><stop offset="100%" style="stop-color:#4f46e5;stop-opacity:1" /></linearGradient>
@@ -170,7 +170,10 @@
                                     <p class="text-xs text-slate-500 text-center">Các phiên đã lên lịch sẽ tự động bắt đầu nếu ứng dụng được mở trong thời gian đã đặt.</p>
                                 </div>
                                 <div class="!mt-6">
-                                    <label for="letter-input" class="block text-lg font-semibold text-slate-800 dark:text-slate-200 mb-3 text-center">Gửi gắm cam kết</label>
+                                    <div class="flex items-center justify-center gap-3 mb-3">
+                                        <label for="letter-input" class="text-lg font-semibold text-slate-800 dark:text-slate-200">Gửi gắm cam kết</label>
+                                        <input id="letter-color-picker" type="color" value="#ffffff" class="w-8 h-8 p-0 border-none rounded-full cursor-pointer bg-transparent">
+                                    </div>
                                     <textarea id="letter-input" rows="3" class="w-full bg-white/80 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-600 rounded-lg p-3 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-purple-500 focus:outline-none transition-all" placeholder="Viết một lá thư cho chính mình trong tương lai. Tại sao phiên học này lại quan trọng?"></textarea>
                                 </div>
                             </div>
@@ -193,7 +196,7 @@
                             <p id="session-subheader" class="text-slate-600 dark:text-slate-400 mb-2">Hãy ở lại đây. Tinh thể của bạn đang phát triển bên trong.</p>
 
                             <div class="my-6 flex justify-center">
-                               <svg id="crystal-svg-session" width="250" height="250" viewBox="0 0 200 200" aria-label="Một tinh thể đang lớn dần, đại diện cho tiến trình của phiên tập trung">
+                               <svg id="crystal-svg-session" width="300" height="300" viewBox="0 0 200 200" aria-label="Một tinh thể đang lớn dần, đại diện cho tiến trình của phiên tập trung">
                                    <defs>
                                         <linearGradient id="grad-main-session" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#a855f7;stop-opacity:1" /><stop offset="100%" style="stop-color:#6366f1;stop-opacity:1" /></linearGradient>
                                         <linearGradient id="grad-side-session" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:1" /><stop offset="100%" style="stop-color:#4f46e5;stop-opacity:1" /></linearGradient>
@@ -239,7 +242,7 @@
     <div id="early-exit-screen" class="hidden">
         <div class="fixed inset-0 bg-red-100/90 dark:bg-red-900/60 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-4 text-center">
             <div class="max-w-md">
-                <svg id="crystal-svg-withered" width="250" height="250" viewBox="0 0 200 200" aria-label="Một tinh thể vỡ, đại diện cho phiên tập trung không hoàn thành" class="mx-auto opacity-60">
+                <svg id="crystal-svg-withered" width="300" height="300" viewBox="0 0 200 200" aria-label="Một tinh thể vỡ, đại diện cho phiên tập trung không hoàn thành" class="mx-auto opacity-60">
                     <defs>
                         <linearGradient id="grad-main-withered" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#a855f7;stop-opacity:1" /><stop offset="100%" style="stop-color:#6366f1;stop-opacity:1" /></linearGradient>
                         <linearGradient id="grad-side-withered" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:1" /><stop offset="100%" style="stop-color:#4f46e5;stop-opacity:1" /></linearGradient>

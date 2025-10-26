@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', () => {
     // --- STATE MANAGEMENT ---
     let studentData = null;
@@ -58,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         scheduledPanel: document.getElementById('scheduled-config-panel'),
         durationInput: document.getElementById('duration-input'),
         letterInput: document.getElementById('letter-input'),
+        letterColorPicker: document.getElementById('letter-color-picker'),
         startTimeInput: document.getElementById('start-time'),
         endTimeInput: document.getElementById('end-time'),
         daysContainer: document.getElementById('days-of-week-container'),
@@ -126,6 +128,18 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) {
             console.error("Failed to save student data to localStorage", e);
         }
+    };
+
+    const getContrastColor = (hexColor) => {
+        if (!hexColor) return '#1e293b'; // Default to dark text
+        const hex = hexColor.replace('#', '');
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+        // Calculate luminance
+        const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+        // Return dark for light backgrounds, light for dark backgrounds
+        return (yiq >= 128) ? '#1e293b' : '#f8fafc'; // slate-800 or slate-50
     };
 
     // --- UI UPDATE FUNCTIONS ---
@@ -214,6 +228,9 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionElements.endEarlyButton.classList.remove('hidden');
         sessionElements.newCrystalButton.classList.add('hidden');
         configurator.letterInput.value = '';
+        configurator.letterInput.style.backgroundColor = '';
+        configurator.letterInput.style.color = '';
+        configurator.letterColorPicker.value = document.documentElement.classList.contains('dark') ? '#0f172a' : '#ffffff';
     };
     
     // --- CORE LOGIC ---
@@ -241,6 +258,17 @@ document.addEventListener('DOMContentLoaded', () => {
         studentData.totalCrystalsGrown += 1;
         studentData.totalFocusTime += sessionConfig.duration;
         studentData.dailyReward.sessionsToday += 1;
+
+        // Save the letter only upon successful completion
+        if (sessionConfig.letter && sessionConfig.letter.content) {
+            studentData.letters.push({
+                date: new Date().toISOString(),
+                content: sessionConfig.letter.content,
+                duration: sessionConfig.originalDurationMinutes,
+                color: sessionConfig.letter.color,
+            });
+        }
+        
         saveStudentData();
         
         updateDashboard();
@@ -255,34 +283,36 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const startFocusSession = (durationMinutes) => {
-        sessionConfig = { duration: durationMinutes * 60 };
+        const letterContent = configurator.letterInput.value.trim();
+        const letterColor = configurator.letterColorPicker.value;
+
+        sessionConfig = { 
+            duration: durationMinutes * 60,
+            originalDurationMinutes: durationMinutes,
+            letter: {
+                content: letterContent,
+                color: letterColor
+            }
+        };
         isSessionActive = true;
         
         resetSessionView();
         views.configurator.classList.add('hidden');
         views.session.classList.remove('hidden');
-        
-        const letterContent = configurator.letterInput.value.trim();
-        if (letterContent) {
-            studentData.letters.push({
-                date: new Date().toISOString(),
-                content: letterContent,
-                duration: durationMinutes,
-            });
-            saveStudentData();
-        }
 
         document.documentElement.requestFullscreen().catch(err => {
             console.error(`Could not enter fullscreen: ${err.message}`);
         });
 
         let timeLeft = sessionConfig.duration;
+        sessionConfig.timeLeft = timeLeft; // Track time left for early exit
         updateTimerDisplay(timeLeft);
         updateGrowthVisual(0, 'session');
         sessionElements.timerProgressBar.style.width = '100%';
 
         timerInterval = setInterval(() => {
             timeLeft -= 1;
+            sessionConfig.timeLeft = timeLeft; // Update time left
             const progress = (sessionConfig.duration - timeLeft) / sessionConfig.duration;
             const progressPercentage = (timeLeft / sessionConfig.duration) * 100;
 
@@ -337,7 +367,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         [...studentData.letters].reverse().forEach(letter => {
             const letterEl = document.createElement('div');
-            letterEl.className = 'bg-slate-100 dark:bg-slate-900/50 p-4 rounded-lg border border-slate-200 dark:border-slate-700';
+            letterEl.className = 'p-4 rounded-lg';
             
             const date = new Date(letter.date);
             const formattedDate = new Intl.DateTimeFormat('vi-VN', {
@@ -346,9 +376,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 timeZone: 'Asia/Ho_Chi_Minh'
             }).format(date);
 
+            const letterBgColor = letter.color || (document.documentElement.classList.contains('dark') ? '#1e293b' : '#f1f5f9');
+            const mainTextColor = getContrastColor(letterBgColor);
+            const metaTextColor = mainTextColor === '#1e293b' ? '#64748b' : '#94a3b8'; // slate-500 or slate-400
+            
+            letterEl.style.backgroundColor = letterBgColor;
+
             letterEl.innerHTML = `
-                <p class="text-xs text-slate-500 dark:text-slate-400 mb-2 font-semibold">${formattedDate} - ${letter.duration} phút</p>
-                <p class="text-slate-700 dark:text-slate-300 whitespace-pre-wrap">${letter.content}</p>
+                <p class="text-xs mb-2 font-semibold" style="color: ${metaTextColor};">${formattedDate} - ${letter.duration} phút</p>
+                <p class="whitespace-pre-wrap" style="color: ${mainTextColor};">${letter.content}</p>
             `;
             weeklyReviewElements.lettersContainer.appendChild(letterEl);
         });
@@ -431,7 +467,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const handleEarlyEndSession = () => {
-        const progress = (sessionConfig.duration - (sessionConfig.duration - (timerInterval ? 1 : 0))) / sessionConfig.duration; // A mock progress
+        const progress = (sessionConfig.duration - sessionConfig.timeLeft) / sessionConfig.duration;
         updateGrowthVisual(progress, 'withered', true);
         cleanupSession();
         showScreen('earlyExit');
@@ -484,6 +520,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (studentData.totalFocusTime === undefined) studentData.totalFocusTime = 0;
             if (studentData.letters === undefined) studentData.letters = [];
+            if (studentData.letters.length > 0 && typeof studentData.letters[0] === 'string') {
+                 studentData.letters = studentData.letters.map(l => ({ content: l, date: new Date().toISOString(), duration: 25, color: '#ffffff' }));
+            }
             saveStudentData();
             // --- End Migration ---
         } else {
@@ -549,6 +588,12 @@ document.addEventListener('DOMContentLoaded', () => {
     configurator.durationInput.addEventListener('input', () => {
         const duration = parseInt(configurator.durationInput.value, 10) || 0;
         updateGrowthVisual(Math.min(1, duration / 120), 'config');
+    });
+
+    configurator.letterColorPicker.addEventListener('input', (e) => {
+        const color = e.target.value;
+        configurator.letterInput.style.backgroundColor = color;
+        configurator.letterInput.style.color = getContrastColor(color);
     });
 
     sessionElements.endEarlyButton.addEventListener('click', handleEarlyEndSession);

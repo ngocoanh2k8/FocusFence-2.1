@@ -25,6 +25,37 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
+/* Custom styles for the color picker */
+input[type="color"] {
+  -webkit-appearance: none;
+  appearance: none;
+  border: 1px solid #cbd5e1; /* slate-300 */
+  padding: 0;
+  width: 2rem; /* 32px */
+  height: 2rem; /* 32px */
+  border-radius: 9999px; /* rounded-full */
+  cursor: pointer;
+  background-color: transparent;
+}
+html.dark input[type="color"] {
+    border-color: #475569; /* slate-600 */
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: 9999px; /* rounded-full */
+}
+
+input[type="color"]::-moz-color-swatch {
+  border: none;
+  border-radius: 9999px; /* rounded-full */
+}
+
+
 /* Screen shake animation for visual alarm */
 @keyframes shake {
   10%, 90% {
