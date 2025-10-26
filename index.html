@@ -58,6 +58,49 @@
                     Chúng tôi tôn trọng quyền riêng tư của bạn. Dữ liệu của bạn được lưu trữ cục bộ và không bao giờ được chia sẻ.
                 </p>
             </div>
+
+            <!-- Why FocusFence? Section -->
+            <div class="mt-8 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg p-6 md:p-8 text-left">
+                <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-4 text-center">Tại sao FocusFence là dành cho bạn?</h3>
+                <p class="text-slate-600 dark:text-slate-400 mb-6 text-center">
+                    Trong kỷ nguyên của TikTok và Reels, khả năng tập trung sâu đang dần trở thành một "siêu năng lực". FocusFence được sinh ra để giúp bạn rèn luyện lại sức mạnh đó.
+                </p>
+                <ul class="space-y-4">
+                    <li class="flex items-start">
+                        <span class="text-2xl mr-4 mt-1">💎</span>
+                        <div>
+                            <h4 class="font-semibold text-slate-800 dark:text-slate-200">Nuôi Dưỡng Tinh Thể Tập Trung</h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-400">Biến mỗi phiên học thành một trò chơi. Hoàn thành mục tiêu để nuôi lớn những tinh thể quý giá, ghi nhận nỗ lực của bạn một cách trực quan.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-2xl mr-4 mt-1">📬</span>
+                        <div>
+                            <h4 class="font-semibold text-slate-800 dark:text-slate-200">Hộp Thời Gian Cam Kết</h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-400">Gửi gắm mục tiêu và quyết tâm của bạn vào những "lá thư cho tương lai". Đọc lại chúng để thấy bạn đã trưởng thành và mạnh mẽ hơn như thế nào.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-2xl mr-4 mt-1">🛡️</span>
+                        <div>
+                            <h4 class="font-semibold text-slate-800 dark:text-slate-200">Tấm Chắn Sao Lãng Thông Minh</h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-400">Khi phiên học bắt đầu, ứng dụng sẽ chuyển sang toàn màn hình và cảnh báo khi bạn rời đi, giúp bạn giữ vững kỷ luật và chống lại cám dỗ.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-2xl mr-4 mt-1">📈</span>
+                        <div>
+                            <h4 class="font-semibold text-slate-800 dark:text-slate-200">Thống Kê & Lịch Trình Cá Nhân</h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-400">Theo dõi tổng thời gian tập trung, số tinh thể đã nuôi và xây dựng một lịch trình học tập khoa học để biến việc học thành thói quen.</p>
+                        </div>
+                    </li>
+                </ul>
+                <div class="mt-6 pt-4 border-t border-slate-200 dark:border-slate-700">
+                    <p class="text-slate-700 dark:text-slate-300 font-semibold text-center">
+                        FocusFence không chỉ là một công cụ đếm giờ. Đây là phòng gym cho não bộ, giúp bạn rèn luyện lại "cơ bắp" tập trung để chinh phục những kiến thức sâu và phức tạp nhất.
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -195,7 +238,7 @@
                          <div class="p-6 md:p-8 pt-16">
                             <p id="session-subheader" class="text-slate-600 dark:text-slate-400 mb-2">Hãy ở lại đây. Tinh thể của bạn đang phát triển bên trong.</p>
 
-                            <div class="my-6 flex justify-center">
+                            <div id="crystal-container-session" class="my-6 flex justify-center">
                                <svg id="crystal-svg-session" width="300" height="300" viewBox="0 0 200 200" aria-label="Một tinh thể đang lớn dần, đại diện cho tiến trình của phiên tập trung">
                                    <defs>
                                         <linearGradient id="grad-main-session" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#a855f7;stop-opacity:1" /><stop offset="100%" style="stop-color:#6366f1;stop-opacity:1" /></linearGradient>
@@ -228,9 +271,14 @@
                             <button id="end-early-button" class="mt-8 w-full md:w-auto text-center bg-red-500/80 hover:bg-red-500/100 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-red-300/50 hover:scale-102 active:scale-98">
                                 Phá vỡ cam kết
                             </button>
-                            <button id="new-crystal-button" class="hidden mt-8 w-full md:w-auto text-center bg-purple-500/90 hover:bg-purple-500/100 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-purple-300/50 hover:scale-102 active:scale-98">
-                                Nuôi cấy tinh thể mới
-                            </button>
+                            <div id="post-session-controls" class="hidden mt-8 flex flex-col md:flex-row gap-4 justify-center">
+                                <button id="start-break-button" class="w-full md:w-auto text-center bg-green-500/90 hover:bg-green-500/100 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-green-300/50 hover:scale-102 active:scale-98">
+                                    Nghỉ 5 phút
+                                </button>
+                                <button id="new-crystal-button" class="w-full md:w-auto text-center bg-purple-500/90 hover:bg-purple-500/100 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-purple-300/50 hover:scale-102 active:scale-98">
+                                    Nuôi cấy tinh thể mới
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

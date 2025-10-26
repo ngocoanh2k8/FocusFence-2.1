@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let studentData = null;
     let sessionConfig = null;
     let isSessionActive = false;
+    let isBreakActive = false;
     let timerInterval = null;
     let scheduleCheckInterval = null;
 
@@ -74,6 +75,9 @@ document.addEventListener('DOMContentLoaded', () => {
         timerProgressBar: document.getElementById('timer-progress-bar'),
         endEarlyButton: document.getElementById('end-early-button'),
         newCrystalButton: document.getElementById('new-crystal-button'),
+        startBreakButton: document.getElementById('start-break-button'),
+        postSessionControls: document.getElementById('post-session-controls'),
+        crystalContainer: document.getElementById('crystal-container-session'),
     };
     const weeklyReviewElements = {
         closeBtn: document.getElementById('close-review-btn'),
@@ -226,7 +230,9 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionElements.timerContainer.classList.remove('hidden');
         sessionElements.successMessageContainer.classList.add('hidden');
         sessionElements.endEarlyButton.classList.remove('hidden');
-        sessionElements.newCrystalButton.classList.add('hidden');
+        sessionElements.postSessionControls.classList.add('hidden');
+        sessionElements.startBreakButton.classList.remove('hidden'); // Ensure break button is visible for next time
+        sessionElements.crystalContainer.classList.remove('hidden');
         configurator.letterInput.value = '';
         configurator.letterInput.style.backgroundColor = '';
         configurator.letterInput.style.color = '';
@@ -279,7 +285,27 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionElements.timerContainer.classList.add('hidden');
         sessionElements.successMessageContainer.classList.remove('hidden');
         sessionElements.endEarlyButton.classList.add('hidden');
-        sessionElements.newCrystalButton.classList.remove('hidden');
+        sessionElements.postSessionControls.classList.remove('hidden');
+    };
+    
+    const handleBreakComplete = () => {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        isBreakActive = false;
+
+        // Update UI after break
+        sessionElements.timerContainer.classList.add('hidden');
+        sessionElements.header.textContent = 'Hết giờ nghỉ!';
+        sessionElements.subheader.textContent = 'Sẵn sàng cho thử thách tiếp theo chưa?';
+        
+        sessionElements.postSessionControls.classList.remove('hidden');
+        sessionElements.startBreakButton.classList.add('hidden');
+
+        // Reset timer colors
+        sessionElements.timerDisplay.classList.add('text-purple-500', 'dark:text-purple-400');
+        sessionElements.timerDisplay.classList.remove('text-green-500', 'dark:text-green-400');
+        sessionElements.timerProgressBar.classList.add('from-blue-400', 'via-purple-500', 'to-green-400');
+        sessionElements.timerProgressBar.classList.remove('bg-green-500');
     };
 
     const startFocusSession = (durationMinutes) => {
@@ -322,6 +348,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (timeLeft <= 0) {
                 handleSessionComplete();
+            }
+        }, 1000);
+    };
+
+    const startBreakSession = () => {
+        isBreakActive = true;
+        const breakDurationSeconds = 5 * 60; // 5 minutes
+        let timeLeft = breakDurationSeconds;
+
+        // Update UI for break
+        sessionElements.postSessionControls.classList.add('hidden');
+        sessionElements.crystalContainer.classList.add('hidden');
+        sessionElements.successMessageContainer.classList.remove('hidden');
+        sessionElements.timerContainer.classList.remove('hidden');
+        
+        sessionElements.header.textContent = 'Giờ giải lao';
+        sessionElements.subheader.textContent = 'Thư giãn và nạp lại năng lượng nhé!';
+        sessionElements.timerDisplay.classList.remove('text-purple-500', 'dark:text-purple-400');
+        sessionElements.timerDisplay.classList.add('text-green-500', 'dark:text-green-400');
+        sessionElements.timerProgressBar.classList.remove('from-blue-400', 'via-purple-500', 'to-green-400');
+        sessionElements.timerProgressBar.classList.add('bg-green-500');
+
+        updateTimerDisplay(timeLeft);
+        sessionElements.timerProgressBar.style.width = '100%';
+
+        timerInterval = setInterval(() => {
+            timeLeft -= 1;
+            const progressPercentage = (timeLeft / breakDurationSeconds) * 100;
+            updateTimerDisplay(timeLeft);
+            sessionElements.timerProgressBar.style.width = `${progressPercentage}%`;
+
+            if (timeLeft <= 0) {
+                handleBreakComplete();
             }
         }, 1000);
     };
@@ -601,7 +660,9 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionConfig = null;
         views.session.classList.add('hidden');
         views.configurator.classList.remove('hidden');
+        sessionElements.postSessionControls.classList.add('hidden');
     });
+    sessionElements.startBreakButton.addEventListener('click', startBreakSession);
     
     mainAppElements.claimRewardButton.addEventListener('click', () => {
         if (!studentData || !studentData.dailyReward) return;
