@@ -109,6 +109,44 @@ document.addEventListener('DOMContentLoaded', () => {
         },
     };
 
+    // --- TIMER UPDATE FUNCTIONS ---
+    const updateFocusTimer = () => {
+        if (!isSessionActive || !sessionConfig || !sessionConfig.endTime) return;
+
+        const timeLeftMs = sessionConfig.endTime - Date.now();
+        const timeLeft = Math.max(0, Math.floor(timeLeftMs / 1000));
+        
+        sessionConfig.timeLeft = timeLeft; // Keep this for early exit logic
+
+        const progress = (sessionConfig.duration - timeLeft) / sessionConfig.duration;
+        const progressPercentage = (timeLeft / sessionConfig.duration) * 100;
+
+        updateTimerDisplay(timeLeft);
+        updateGrowthVisual(progress, 'session');
+        sessionElements.timerProgressBar.style.width = `${progressPercentage}%`;
+
+        if (timeLeft <= 0) {
+            handleSessionComplete();
+        }
+    };
+    
+    const breakDurationSeconds = 5 * 60;
+    const updateBreakTimer = () => {
+        if (!isBreakActive || !sessionConfig || !sessionConfig.breakEndTime) return;
+
+        const timeLeftMs = sessionConfig.breakEndTime - Date.now();
+        const timeLeft = Math.max(0, Math.floor(timeLeftMs / 1000));
+        const progressPercentage = (timeLeft / breakDurationSeconds) * 100;
+        
+        updateTimerDisplay(timeLeft);
+        sessionElements.timerProgressBar.style.width = `${progressPercentage}%`;
+
+        if (timeLeft <= 0) {
+            handleBreakComplete();
+        }
+    };
+
+
     // --- HELPER FUNCTIONS ---
     const showScreen = (screenName) => {
         Object.values(screens).forEach(screen => screen.classList.add('hidden'));
@@ -292,6 +330,9 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(timerInterval);
         timerInterval = null;
         isBreakActive = false;
+        if (sessionConfig) {
+            delete sessionConfig.breakEndTime;
+        }
 
         // Update UI after break
         sessionElements.timerContainer.classList.add('hidden');
@@ -314,6 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         sessionConfig = { 
             duration: durationMinutes * 60,
+            endTime: Date.now() + (durationMinutes * 60 * 1000),
             originalDurationMinutes: durationMinutes,
             letter: {
                 content: letterContent,
@@ -330,32 +372,13 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(`Could not enter fullscreen: ${err.message}`);
         });
 
-        let timeLeft = sessionConfig.duration;
-        sessionConfig.timeLeft = timeLeft; // Track time left for early exit
-        updateTimerDisplay(timeLeft);
-        updateGrowthVisual(0, 'session');
-        sessionElements.timerProgressBar.style.width = '100%';
-
-        timerInterval = setInterval(() => {
-            timeLeft -= 1;
-            sessionConfig.timeLeft = timeLeft; // Update time left
-            const progress = (sessionConfig.duration - timeLeft) / sessionConfig.duration;
-            const progressPercentage = (timeLeft / sessionConfig.duration) * 100;
-
-            updateTimerDisplay(timeLeft);
-            updateGrowthVisual(progress, 'session');
-            sessionElements.timerProgressBar.style.width = `${progressPercentage}%`;
-
-            if (timeLeft <= 0) {
-                handleSessionComplete();
-            }
-        }, 1000);
+        updateFocusTimer(); // Initial call
+        timerInterval = setInterval(updateFocusTimer, 1000);
     };
 
     const startBreakSession = () => {
         isBreakActive = true;
-        const breakDurationSeconds = 5 * 60; // 5 minutes
-        let timeLeft = breakDurationSeconds;
+        sessionConfig.breakEndTime = Date.now() + (breakDurationSeconds * 1000);
 
         // Update UI for break
         sessionElements.postSessionControls.classList.add('hidden');
@@ -370,19 +393,8 @@ document.addEventListener('DOMContentLoaded', () => {
         sessionElements.timerProgressBar.classList.remove('from-blue-400', 'via-purple-500', 'to-green-400');
         sessionElements.timerProgressBar.classList.add('bg-green-500');
 
-        updateTimerDisplay(timeLeft);
-        sessionElements.timerProgressBar.style.width = '100%';
-
-        timerInterval = setInterval(() => {
-            timeLeft -= 1;
-            const progressPercentage = (timeLeft / breakDurationSeconds) * 100;
-            updateTimerDisplay(timeLeft);
-            sessionElements.timerProgressBar.style.width = `${progressPercentage}%`;
-
-            if (timeLeft <= 0) {
-                handleBreakComplete();
-            }
-        }, 1000);
+        updateBreakTimer(); // Initial call
+        timerInterval = setInterval(updateBreakTimer, 1000);
     };
 
     const showDailyReminder = () => {
@@ -451,7 +463,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- EVENT HANDLERS ---
     const onVisibilityChange = () => {
-        if (document.hidden) startAlarm(); else stopAlarm();
+        if (document.hidden) {
+            if (isSessionActive) startAlarm();
+        } else {
+            stopAlarm();
+            if (isSessionActive) {
+                updateFocusTimer();
+            } else if (isBreakActive) {
+                updateBreakTimer();
+            }
+        }
     };
 
     const onFullscreenChange = () => {
@@ -697,12 +718,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Listen for session activity to add/remove distraction listeners
     const observer = new MutationObserver(() => {
-        if (isSessionActive) {
-            document.addEventListener("visibilitychange", onVisibilityChange);
-            document.addEventListener("fullscreenchange", onFullscreenChange);
-        } else {
+        const sessionIsRunning = isSessionActive || isBreakActive;
+        // Using a single visibility change listener now for everything
+        if (views.session.classList.contains('hidden')) {
             document.removeEventListener("visibilitychange", onVisibilityChange);
             document.removeEventListener("fullscreenchange", onFullscreenChange);
+        } else {
+            document.addEventListener("visibilitychange", onVisibilityChange);
+            document.addEventListener("fullscreenchange", onFullscreenChange);
         }
     });
     observer.observe(views.session, { attributes: true, attributeFilter: ['class'] });
